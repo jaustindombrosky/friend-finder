@@ -1,21 +1,37 @@
-var express = require('express');
-var bodyParser = require('body-parser');
 var path = require('path');
-var apiRoutes = require('./app/routing/api-routes.js');
-var htmlRoutes = require('./app/routing/html-routes.js');
-var app = express();
-var PORT = process.env.PORT || 8080;
+var friends = require('../data/friends.js');
+module.exports = function(app) {
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.text());
-app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
+	app.get('/api/friends', function(req, res) {
+		res.json(friends);
+	});
 
-// Server Routes
-apiRoutes(app); 
-htmlRoutes(app);
+	app.post('/api/friends', function(req, res) {
+		var userInput = req.body;
+		var userResponses = userInput.scores;
+		var matchName = '';
+		var matchImage = '';
+		var totalDifference = 10000;
 
-// LISTENER - this starts the server
-app.listen(PORT, function() {
-  console.log("App listening on PORT: " + PORT);
-});
+		for (var i = 0; i < friends.length; i++) {
+			var diff = 0;
+			for (var j = 0; j < userResponses.length; j++) {
+				diff += Math.abs(friends[i].scores[j] - userResponses[j]);
+			}
+
+			if (diff < totalDifference) {
+				// console.log('Closest match found = ' + diff);
+				// console.log('Friend name = ' + friends[i].name);
+				// console.log('Friend image = ' + friends[i].photo);
+
+				totalDifference = diff;
+				matchName = friends[i].name;
+				matchImage = friends[i].photo;
+			}
+		}
+
+		friends.push(userInput);
+
+		res.json({status: 'OK', matchName: matchName, matchImage: matchImage});
+	});
+};

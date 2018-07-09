@@ -1,4 +1,4 @@
-var friendsData = [
+var friendsArray = [
     {
       name: "Han Solo",
       photo: "https://nerdist.com/wp-content/uploads/2015/11/Han-Solo-Main.jpg",
@@ -36,4 +36,4 @@ var friendsData = [
     }
   ];
  
-  module.exports = friendsData;
+  module.exports = friendsArray;
